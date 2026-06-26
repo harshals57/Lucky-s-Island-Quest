@@ -52,38 +52,27 @@ fish.goto(-240, -200)
 
 user_turtle = ada
 
-# Tracking key states and last tapped key
-keys_held = {"Right": False, "Left": False}
+# Tracking last tapped key
 last_key_pressed = None
 
 def press_right():
     global last_key_pressed
-    if not keys_held["Right"]:
-        keys_held["Right"] = True
-        if last_key_pressed != "Right":
-            user_turtle.forward(randint(5, 9))
-            last_key_pressed = "Right"
-
-def release_right():
-    keys_held["Right"] = False
+    # Enforce alternate tapping (must press Left before pressing Right again)
+    if last_key_pressed != "Right":
+        user_turtle.forward(randint(6, 10))
+        last_key_pressed = "Right"
 
 def press_left():
     global last_key_pressed
-    if not keys_held["Left"]:
-        keys_held["Left"] = True
-        if last_key_pressed != "Left":
-            user_turtle.forward(randint(5, 9))
-            last_key_pressed = "Left"
-
-def release_left():
-    keys_held["Left"] = False
+    # Enforce alternate tapping (must press Right before pressing Left again)
+    if last_key_pressed != "Left":
+        user_turtle.forward(randint(6, 10))
+        last_key_pressed = "Left"
 
 # Register event handlers
 screen.listen()
 screen.onkeypress(press_right, "Right")
-screen.onkeyrelease(release_right, "Right")
 screen.onkeypress(press_left, "Left")
-screen.onkeyrelease(release_left, "Left")
 
 # Create a writer turtle for status announcements
 writer = Turtle()
@@ -93,12 +82,26 @@ writer.color("yellow")
 
 game_over = False
 
+# Define globals for menu interaction
+waiting_for_input = True
+action = None
+
+def handle_restart():
+    global waiting_for_input, action
+    action = "restart"
+    waiting_for_input = False
+    
+def handle_exit():
+    global waiting_for_input, action
+    action = "exit"
+    waiting_for_input = False
+
 # Turn off tracer for manual updating (prevents lag/flicker)
 screen.tracer(0)
 
 # Game loop
 while not game_over:
-    # Move AI opponents forward by random amount (significantly boosted speed!)
+    # Move AI opponents forward by random amount
     lol.forward(randint(3, 6))
     t.forward(randint(3, 6))
     fish.forward(randint(3, 6))
@@ -120,20 +123,10 @@ while not game_over:
         writer.write("Press SPACE to Restart or ESC to Exit", align="center", font=("Arial", 18, "bold"))
         screen.update()
         
-        # Wait for input
+        # Reset input loop states
         waiting_for_input = True
         action = None
         
-        def handle_restart():
-            nonlocal waiting_for_input, action
-            action = "restart"
-            waiting_for_input = False
-            
-        def handle_exit():
-            nonlocal waiting_for_input, action
-            action = "exit"
-            waiting_for_input = False
-            
         screen.listen()
         screen.onkeypress(handle_restart, "space")
         screen.onkeypress(handle_exit, "Escape")
@@ -152,15 +145,11 @@ while not game_over:
             # Reset tracking variables
             writer.clear()
             last_key_pressed = None
-            keys_held["Right"] = False
-            keys_held["Left"] = False
             
             # Rebind keys
             screen.listen()
             screen.onkeypress(press_right, "Right")
-            screen.onkeyrelease(release_right, "Right")
             screen.onkeypress(press_left, "Left")
-            screen.onkeyrelease(release_left, "Left")
         else:
             screen.bye()
             break
