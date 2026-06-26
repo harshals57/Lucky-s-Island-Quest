@@ -90,102 +90,12 @@ def snake():
     im = True
     
     # Main Gameplay Loop
-    while im:
-        wn.update()
-        
-        # Check collision with borders
-        if head.xcor() > 290 or head.xcor() < -290 or head.ycor() > 290 or head.ycor() < -290:
-            pen.goto(0, 0)
-            pen.color("red")
-            pen.write("GAME OVER!", align="center", font=("candara", 30, "bold"))
-            pen.goto(0, -40)
-            pen.color("white")
-            pen.write("Press SPACE to Restart or ESC to Exit", align="center", font=("candara", 18, "bold"))
+    try:
+        while im:
             wn.update()
             
-            # Wait for space or escape
-            waiting_for_input = True
-            action = None
-            
-            def handle_restart():
-                nonlocal waiting_for_input, action
-                action = "restart"
-                waiting_for_input = False
-                
-            def handle_exit():
-                nonlocal waiting_for_input, action
-                action = "exit"
-                waiting_for_input = False
-                
-            wn.listen()
-            wn.onkeypress(handle_restart, "space")
-            wn.onkeypress(handle_exit, "Escape")
-            
-            while waiting_for_input:
-                wn.update()
-                time.sleep(0.05)
-                
-            if action == "restart":
-                head.goto(0, 0)
-                head.direction = "Stop"
-                for segment in segments:
-                    segment.goto(1000, 1000)
-                segments.clear()
-                
-                score = 0
-                delay = 0.1
-                
-                pen.clear()
-                pen.goto(0, 250)
-                pen.color("white")
-                pen.write("Score : {} High Score : {} ".format(score, high_score), align="center", font=("candara", 24, "bold"))
-                
-                # Rebind movement keys
-                wn.listen()
-                wn.onkeypress(group, "Up")
-                wn.onkeypress(godown, "Down")
-                wn.onkeypress(goleft, "Left")
-                wn.onkeypress(goright, "Right")
-            else:
-                wn.bye()
-                return
-            
-        # Check collision with food
-        if head.distance(food) < 20:
-            x = random.randint(-270, 270)
-            y = random.randint(-270, 270)
-            food.goto(x, y)
-
-            # Adding segment
-            new_segment = turtle.Turtle()
-            new_segment.speed(0)
-            new_segment.shape("../images/lucky.gif")  # Use the registered shape
-            new_segment.penup()
-            segments.append(new_segment)
-            
-            delay = max(0.02, delay - 0.005)
-            score += 10
-            if score > high_score:
-                high_score = score
-            pen.clear()
-            pen.write("Score : {} High Score : {} ".format(score, high_score), align="center", font=("candara", 24, "bold"))
-            
-        # Move body segments in reverse order
-        for index in range(len(segments)-1, 0, -1):
-            x = segments[index-1].xcor()
-            y = segments[index-1].ycor()
-            segments[index].goto(x, y)
-            
-        if len(segments) > 0:
-            x = head.xcor()
-            y = head.ycor()
-            segments[0].goto(x, y)
-            
-        move()
-        
-        # Check collision with own body
-        for segment in segments:
-            if segment.distance(head) < 20:
+            # Check collision with borders
+            if head.xcor() > 290 or head.xcor() < -290 or head.ycor() > 290 or head.ycor() < -290:
                 pen.goto(0, 0)
                 pen.color("red")
                 pen.write("GAME OVER!", align="center", font=("candara", 30, "bold"))
@@ -219,10 +129,10 @@ def snake():
                 if action == "restart":
                     head.goto(0, 0)
                     head.direction = "Stop"
-                    for s in segments:
-                        s.goto(1000, 1000)
+                    for segment in segments:
+                        segment.goto(1000, 1000)
                     segments.clear()
-
+                    
                     score = 0
                     delay = 0.1
                     
@@ -241,9 +151,107 @@ def snake():
                     wn.bye()
                     return
                 
-        time.sleep(delay)
+            # Check collision with food
+            if head.distance(food) < 20:
+                x = random.randint(-270, 270)
+                y = random.randint(-270, 270)
+                food.goto(x, y)
 
-    wn.mainloop()
+                # Adding segment
+                new_segment = turtle.Turtle()
+                new_segment.speed(0)
+                new_segment.shape("../images/lucky.gif")  # Use the registered shape
+                new_segment.penup()
+                segments.append(new_segment)
+                
+                delay = max(0.02, delay - 0.005)
+                score += 10
+                if score > high_score:
+                    high_score = score
+                pen.clear()
+                pen.write("Score : {} High Score : {} ".format(score, high_score), align="center", font=("candara", 24, "bold"))
+                
+            # Move body segments in reverse order
+            for index in range(len(segments)-1, 0, -1):
+                x = segments[index-1].xcor()
+                y = segments[index-1].ycor()
+                segments[index].goto(x, y)
+                
+            if len(segments) > 0:
+                x = head.xcor()
+                y = head.ycor()
+                segments[0].goto(x, y)
+                
+            move()
+            
+            # Check collision with own body
+            for segment in segments:
+                if segment.distance(head) < 20:
+                    pen.goto(0, 0)
+                    pen.color("red")
+                    pen.write("GAME OVER!", align="center", font=("candara", 30, "bold"))
+                    pen.goto(0, -40)
+                    pen.color("white")
+                    pen.write("Press SPACE to Restart or ESC to Exit", align="center", font=("candara", 18, "bold"))
+                    wn.update()
+                    
+                    # Wait for space or escape
+                    waiting_for_input = True
+                    action = None
+                    
+                    def handle_restart():
+                        nonlocal waiting_for_input, action
+                        action = "restart"
+                        waiting_for_input = False
+                        
+                    def handle_exit():
+                        nonlocal waiting_for_input, action
+                        action = "exit"
+                        waiting_for_input = False
+                        
+                    wn.listen()
+                    wn.onkeypress(handle_restart, "space")
+                    wn.onkeypress(handle_exit, "Escape")
+                    
+                    while waiting_for_input:
+                        wn.update()
+                        time.sleep(0.05)
+                        
+                    if action == "restart":
+                        head.goto(0, 0)
+                        head.direction = "Stop"
+                        for s in segments:
+                            s.goto(1000, 1000)
+                        segments.clear()
+
+                        score = 0
+                        delay = 0.1
+                        
+                        pen.clear()
+                        pen.goto(0, 250)
+                        pen.color("white")
+                        pen.write("Score : {} High Score : {} ".format(score, high_score), align="center", font=("candara", 24, "bold"))
+                        
+                        # Rebind movement keys
+                        wn.listen()
+                        wn.onkeypress(group, "Up")
+                        wn.onkeypress(godown, "Down")
+                        wn.onkeypress(goleft, "Left")
+                        wn.onkeypress(goright, "Right")
+                    else:
+                        wn.bye()
+                        return
+                    
+            time.sleep(delay)
+    except Exception:
+        # Window was closed during gameplay, exit loop cleanly
+        pass
+
+    try:
+        wn.mainloop()
+    except:
+        pass
 
 if __name__ == "__main__":
     snake()
+
