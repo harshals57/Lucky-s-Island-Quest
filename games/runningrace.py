@@ -12,6 +12,14 @@ screen.bgpic("../images/we.gif")
 screen.title("Aqua-mania Sprint - Running Game")
 screen.setup(width=800, height=600)
 
+# Force window focus on startup
+try:
+    canvas = screen.getcanvas()
+    root = canvas.winfo_toplevel()
+    root.focus_force()
+except:
+    pass
+
 # Add shapes from ../images/
 screen.addshape("../images/swim.gif")
 screen.addshape("../images/lol.gif")
@@ -52,34 +60,28 @@ fish.goto(-240, -200)
 
 user_turtle = ada
 
-# Tracking last tapped key
-last_key_pressed = None
+# Tap controls using Right Arrow or Space with cooldown to prevent holding cheats
+last_tap_time = 0
 game_over = False
 
 def press_right():
-    global last_key_pressed
-    # Only move forward if the last tapped key was not Right (enforcing alternation)
-    if not game_over and last_key_pressed != "Right":
+    global last_tap_time, game_over
+    if game_over:
+        return
+        
+    current_time = time.time()
+    # 80ms cooldown to block continuous key holding, but allowing fast mashing
+    if current_time - last_tap_time > 0.08:
         try:
-            user_turtle.forward(randint(6, 10))
-            last_key_pressed = "Right"
+            user_turtle.forward(12)  # Moves forward 12 pixels per tap
+            last_tap_time = current_time
         except:
             pass
 
-def press_left():
-    global last_key_pressed
-    # Only move forward if the last tapped key was not Left (enforcing alternation)
-    if not game_over and last_key_pressed != "Left":
-        try:
-            user_turtle.forward(randint(6, 10))
-            last_key_pressed = "Left"
-        except:
-            pass
-
-# Register event handlers
+# Register event handlers (supports both Right Arrow and Space bar for mashing!)
 screen.listen()
 screen.onkeypress(press_right, "Right")
-screen.onkeypress(press_left, "Left")
+screen.onkeypress(press_right, "space")
 
 # Create a writer turtle for status announcements
 writer = Turtle()
@@ -104,9 +106,9 @@ def handle_exit():
 # Turn off tracer for manual updating (prevents lag/flicker)
 screen.tracer(0)
 
-# Frame-by-frame game loop using Turtle's ontimer to prevent Tkinter window freeze
+# Frame-by-frame game loop using Turtle's ontimer
 def game_loop():
-    global game_over, last_key_pressed, waiting_for_input, action
+    global game_over, waiting_for_input, action
     
     try:
         if game_over:
@@ -123,10 +125,10 @@ def game_loop():
                 speed += randint(3, 6)
                 
             # Final stretch rubber band:
-            # If the player is very close to the finish line (xcor > 180), the AI gets an extra boost
-            # to overtake the player right before the end, creating the requested "about to win but lose" illusion.
+            # If the player is very close to the finish line (xcor > 180), the AI gets a massive boost
+            # to overtake the player right before the end, creating the "about to win but lose" illusion.
             if user_turtle.xcor() > 180:
-                speed += randint(6, 10)
+                speed += randint(7, 11)
                 
             opponent.forward(speed)
 
@@ -137,7 +139,7 @@ def game_loop():
         if user_turtle.xcor() >= 280 or lol.xcor() >= 280 or t.xcor() >= 280 or fish.xcor() >= 280:
             game_over = True
             
-            # The AI will almost always overtake, but we verify who crossed first
+            # Determine winner
             if user_turtle.xcor() >= 280:
                 winner_text = "YOU WON!"
             else:
@@ -159,7 +161,7 @@ def game_loop():
             screen.onkeypress(handle_restart, "space")
             screen.onkeypress(handle_exit, "Escape")
             
-            # Blocking loop for menu selection (sleep yields to Tkinter window refresh)
+            # Blocking loop for menu selection
             while waiting_for_input:
                 screen.update()
                 time.sleep(0.05)
@@ -173,13 +175,12 @@ def game_loop():
                 
                 # Reset tracking variables
                 writer.clear()
-                last_key_pressed = None
                 game_over = False
                 
                 # Rebind race controls
                 screen.listen()
                 screen.onkeypress(press_right, "Right")
-                screen.onkeypress(press_left, "Left")
+                screen.onkeypress(press_right, "space")
                 
                 # Re-run the loop
                 game_loop()
