@@ -3,7 +3,7 @@ import time
 import random
 import os
 
-# Set working directory to the script's directory
+# Set working directory to this script's directory (games/)
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 def snake():
@@ -18,12 +18,12 @@ def snake():
     wn.setup(width=600, height=600)
     wn.tracer(0)
 
-    # Register "lucky.gif" as a new shape
-    wn.addshape("lucky.gif")
+    # Register "lucky.gif" shape from ../images/
+    wn.addshape("../images/lucky.gif")
 
     # Head of the snake
     head = turtle.Turtle()
-    head.shape("lucky.gif")  # Use the registered shape "lucky.gif"
+    head.shape("../images/lucky.gif")  # Use the registered shape
     head.color("black")
     head.penup()
     head.goto(0, 0)
@@ -95,7 +95,6 @@ def snake():
         
         # Check collision with borders
         if head.xcor() > 290 or head.xcor() < -290 or head.ycor() > 290 or head.ycor() < -290:
-            # Display GAME OVER on pen
             pen.goto(0, 0)
             pen.color("red")
             pen.write("GAME OVER!", align="center", font=("candara", 30, "bold"))
@@ -103,7 +102,6 @@ def snake():
             
             time.sleep(1.5)
             
-            # Reset head and segments
             head.goto(0, 0)
             head.direction = "Stop"
             for segment in segments:
@@ -127,7 +125,7 @@ def snake():
             # Adding segment
             new_segment = turtle.Turtle()
             new_segment.speed(0)
-            new_segment.shape("lucky.gif")  # Use the registered shape "lucky.gif"
+            new_segment.shape("../images/lucky.gif")  # Use the registered shape
             new_segment.penup()
             segments.append(new_segment)
             

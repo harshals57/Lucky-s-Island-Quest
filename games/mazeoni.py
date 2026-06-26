@@ -3,19 +3,18 @@ from random import choice
 from turtle import *
 from freegames import floor, vector
 
-# Set working directory to script's directory
+# Set working directory to this script's directory (games/)
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 def oni():
-    # Setup window title and dimensions
     setup(420, 420, 370, 0)
     title("Maze Runner - Peek-a-boo! with Onis")
     hideturtle()
     tracer(False)
     
-    # Register "lucky.gif" and "oni.gif" shapes
-    register_shape("lucky.gif")
-    register_shape("oni.gif")
+    # Register shapes from ../images/
+    register_shape("../images/lucky.gif")
+    register_shape("../images/oni.gif")
 
     state = {'score': 0}
     path = Turtle(visible=False)
@@ -140,7 +139,7 @@ def oni():
         # Draw pacman with "lucky.gif" shape
         up()
         goto(pacman.x + 10, pacman.y + 10)
-        shape("lucky.gif")
+        shape("../images/lucky.gif")
         stamp()
 
         for point, course in ghosts:
@@ -159,7 +158,7 @@ def oni():
 
             up()
             goto(point.x + 10, point.y + 10)
-            shape("oni.gif")
+            shape("../images/oni.gif")
             stamp()
 
         update()

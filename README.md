@@ -2,6 +2,8 @@
 
 Welcome to **Lucky's Island Quest**, a collection of 4 retro mini-games inspired by the *Google Doodle Champion Island Games*! This suite features dynamic video intros, synchronized background music, and challenging arcade gameplay built entirely using Python, Pygame, and Turtle graphics.
 
+![Lucky's Island Quest Homepage](images/screenshot_launcher.png)
+
 ---
 
 ## 🎮 The Mini-Games
@@ -15,11 +17,19 @@ Welcome to **Lucky's Island Quest**, a collection of 4 retro mini-games inspired
   * `SPACE` (on Game Over): Restart
   * `ESC` (on Game Over): Exit to main menu
 
+![Obstacle Runner Screenshot](images/screenshot_obstacle.png)
+
+---
+
 ### 👹 2. Maze Runner (*Peek-a-boo! with Onis*)
 * **Overview**: A Pac-Man style maze escape game. Eat all the dots while evading the red Onis chasing you!
 * **Features**: Features on-screen "GAME OVER" and "YOU WIN!" banner announcements when you hit 100 points or get caught.
 * **Controls**:
   * `Arrow Keys`: Change movement direction
+
+![Maze Runner Screenshot](images/screenshot_maze.png)
+
+---
 
 ### 🐍 3. Slither Runner (*Eat it all you can!*)
 * **Overview**: A classic retro Snake game. Eat food to grow longer, but don't crash into the walls or your own tail!
@@ -27,12 +37,18 @@ Welcome to **Lucky's Island Quest**, a collection of 4 retro mini-games inspired
 * **Controls**:
   * `Arrow Keys`: Control snake direction
 
+![Slither Runner Screenshot](images/screenshot_slither.png)
+
+---
+
 ### 🏊 4. Aqua-mania Sprint (*Running Game*)
 * **Overview**: An intense competitive swimming/running race against three AI opponents.
 * **Features**: Double-safety alternate keypress detection prevents holding keys down to cheat. You must tap the keys rapidly to win!
 * **Controls**:
   * `LEFT / RIGHT Arrows` (Alternating): Tap Left and Right arrow keys in turns to swim forward.
   * *Holding down keys or pressing the same key twice will not register movement.*
+
+![Aqua-mania Sprint Screenshot](images/screenshot_sprint.png)
 
 ---
 
@@ -63,12 +79,8 @@ python op.py
 
 ---
 
-## 📂 Repository Structure
-* `op.py`: The homepage launcher and video manager.
-* `arrowjumper.py`: Source code for Obstacle Runner (Game 1).
-* `mazeoni.py`: Source code for Maze Runner (Game 2).
-* `e.py`: Source code for Slither Runner (Game 3).
-* `runningrace.py`: Source code for Aqua-mania Sprint (Game 4).
-* `lucky.jpg` / `lucky.gif` / `oni.gif` / `swim.gif` / `lol.gif` / `t.gif` / `fish.gif`: Game assets and sprites.
-* `stars.jpg` / `g.png` / `bg.png` / `cactus.png` / `we.gif`: Launcher and background assets.
-* `w.ttf`: Custom font.
+## 📂 Project Structure
+* 📂 `games/`: Contains the 4 active playable mini-games (`arrowjumper.py`, `mazeoni.py`, `e.py`, `runningrace.py`).
+* 📂 `images/`: Stores all sprites, icons, background images, and game screenshots.
+* 📄 `op.py`: The main homepage launcher, video player, and audio manager.
+* 📄 `w.ttf`: Custom font.

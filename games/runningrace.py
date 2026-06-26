@@ -3,20 +3,20 @@ from turtle import *
 from random import randint
 import os
 
-# Set working directory to script's directory
+# Set working directory to this script's directory (games/)
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 # Create the turtle screen
 screen = Screen()
-screen.bgpic("we.gif")
+screen.bgpic("../images/we.gif")
 screen.title("Aqua-mania Sprint - Running Game")
 screen.setup(width=800, height=600)
 
-# Add shapes
-screen.addshape("swim.gif")
-screen.addshape("lol.gif")
-screen.addshape("t.gif")
-screen.addshape("fish.gif")
+# Add shapes from ../images/
+screen.addshape("../images/swim.gif")
+screen.addshape("../images/lol.gif")
+screen.addshape("../images/t.gif")
+screen.addshape("../images/fish.gif")
 
 # Draw the finish line
 tur = Turtle()
@@ -31,22 +31,22 @@ tur.goto(280, -400)
 
 # Create the swimmers/runners
 ada = Turtle()
-ada.shape("swim.gif")
+ada.shape("../images/swim.gif")
 ada.penup()
 ada.goto(-240, 200)
 
 lol = Turtle()
-lol.shape("lol.gif")
+lol.shape("../images/lol.gif")
 lol.penup()
 lol.goto(-240, 50)
 
 t = Turtle()
-t.shape("t.gif")
+t.shape("../images/t.gif")
 t.penup()
 t.goto(-240, -100)
 
 fish = Turtle()
-fish.shape("fish.gif")
+fish.shape("../images/fish.gif")
 fish.penup()
 fish.goto(-240, -200)
 
@@ -58,10 +58,8 @@ last_key_pressed = None
 
 def press_right():
     global last_key_pressed
-    # Only register on initial press (ignores OS auto-repeat)
     if not keys_held["Right"]:
         keys_held["Right"] = True
-        # Enforce alternate tapping (must tap Left before tapping Right again)
         if last_key_pressed != "Right":
             user_turtle.forward(randint(5, 9))
             last_key_pressed = "Right"
@@ -71,10 +69,8 @@ def release_right():
 
 def press_left():
     global last_key_pressed
-    # Only register on initial press (ignores OS auto-repeat)
     if not keys_held["Left"]:
         keys_held["Left"] = True
-        # Enforce alternate tapping (must tap Right before tapping Left again)
         if last_key_pressed != "Left":
             user_turtle.forward(randint(5, 9))
             last_key_pressed = "Left"

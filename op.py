@@ -17,10 +17,10 @@ pygame.mixer.init()
 yellow = (255, 255, 0)
 brown = (165, 42, 42)
 
-# Load images
-g = pygame.image.load("stars.jpg")
+# Load images from the images/ folder
+g = pygame.image.load("images/stars.jpg")
 gg = pygame.transform.scale(g, (800, 800))
-l = pygame.image.load("g.png")
+l = pygame.image.load("images/g.png")
 imp = pygame.transform.scale(l, (250, 250))
 
 # Set the dimensions of the window
@@ -156,22 +156,22 @@ while running:
                 if button1_rect.collidepoint(mouse_pos):
                     pygame.mixer.music.stop()  # Stop overworld music!
                     download_and_play("https://youtu.be/1exYBdNZrhg", "swimming_intro.mp4")
-                    run_game_process("arrowjumper.py", "[Official] Doodle Champion Island Games - Artistic Swimming Song 1 (Rock).mp3")
+                    run_game_process("games/arrowjumper.py", "[Official] Doodle Champion Island Games - Artistic Swimming Song 1 (Rock).mp3")
 
                 elif button2_rect.collidepoint(mouse_pos):
                     pygame.mixer.music.stop()  # Stop overworld music!
                     download_and_play("https://youtu.be/qsqWftxM3iU", "rugby_intro.mp4")
-                    run_game_process("mazeoni.py", "[Official] Doodle Champion Island Games - Rugby Theme.mp3")
+                    run_game_process("games/mazeoni.py", "[Official] Doodle Champion Island Games - Rugby Theme.mp3")
 
                 elif button3_rect.collidepoint(mouse_pos):
                     pygame.mixer.music.stop()  # Stop overworld music!
                     download_and_play("https://youtu.be/fgJy3Q0vzMw", "marathon_intro.mp4")
-                    run_game_process("e.py", "[Official] Doodle Champion Island Games - Marathon Theme.mp3")
+                    run_game_process("games/e.py", "[Official] Doodle Champion Island Games - Marathon Theme.mp3")
 
                 elif button4_rect.collidepoint(mouse_pos):
                     pygame.mixer.music.stop()  # Stop overworld music!
                     download_and_play("https://youtu.be/aeIySOUIQ2g", "skateboarding_intro.mp4")
-                    run_game_process("runningrace.py", "[Official] Doodle Champion Island Games - Skateboarding Theme.mp3")
+                    run_game_process("games/runningrace.py", "[Official] Doodle Champion Island Games - Skateboarding Theme.mp3")
 
     # Fill the window with background
     window.fill(black)
