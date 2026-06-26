@@ -1,0 +1,22 @@
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Pygame & Python environments
+.venv/
+venv/
+ENV/
+
+# Large media files (downloaded dynamically or unused)
+*.mp4
+w.mp3
+
+# Editor configuration files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
