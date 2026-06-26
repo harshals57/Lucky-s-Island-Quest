@@ -72,8 +72,15 @@ def download_and_play(url, local_filename):
     if os.path.exists(filepath):
         print(f"Playing video {local_filename}...")
         try:
-            # Create VLC player
-            media = vlc.MediaPlayer(filepath)
+            # Create VLC player instance
+            instance = vlc.Instance()
+            media = instance.media_player_new()
+            media.set_media(instance.media_new(filepath))
+            
+            # Embed VLC inside the Pygame window using HWND
+            hwnd = pygame.display.get_wm_info()['window']
+            media.set_hwnd(hwnd)
+            
             media.play()
             
             # Sleep briefly to let it start
@@ -81,17 +88,21 @@ def download_and_play(url, local_filename):
             
             # Wait for it to finish, allowing user to skip using Space, Escape, X key, or clicking the X close window button
             running_video = True
+            play_game = True
             while running_video:
                 state = media.get_state()
                 if state in [vlc.State.Ended, vlc.State.Error, vlc.State.Stopped]:
                     break
                 
-                # Check for Pygame key events to skip
+                # Check for Pygame events to skip
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
-                        # Clicking Pygame window close button acts as a skip instead of exiting launcher
+                        # Clicking window close button skips the video AND cancels launching the game
                         media.stop()
                         running_video = False
+                        play_game = False
+                        # Put the QUIT event back in the event queue so the main loop handles it and exits
+                        pygame.event.post(pygame.event.Event(pygame.QUIT))
                         break
                     elif event.type == pygame.KEYDOWN:
                         if event.key in [pygame.K_SPACE, pygame.K_ESCAPE, pygame.K_x]:
@@ -100,11 +111,20 @@ def download_and_play(url, local_filename):
                             break
                 time.sleep(0.05)
             media.release()
+            
+            # Clear Pygame screen after video finishes so video frames don't linger
+            window.fill(black)
+            pygame.display.update()
+            
+            return play_game
         except Exception as e:
             print(f"Error playing video: {e}")
+    return True
 
-# Play startup video
-download_and_play("https://youtu.be/MKQ4bX141zM", "intro.mp4")
+# Play startup video (if user closes this, play_game is False, we will exit)
+if not download_and_play("https://youtu.be/MKQ4bX141zM", "intro.mp4"):
+    pygame.quit()
+    sys.exit()
 
 # Start background music
 pygame.mixer.music.load("[Official] Doodle Champion Island Games - Overworld.mp3")
@@ -155,23 +175,23 @@ while running:
 
                 if button1_rect.collidepoint(mouse_pos):
                     pygame.mixer.music.stop()  # Stop overworld music!
-                    download_and_play("https://youtu.be/1exYBdNZrhg", "swimming_intro.mp4")
-                    run_game_process("games/arrowjumper.py", "[Official] Doodle Champion Island Games - Artistic Swimming Song 1 (Rock).mp3")
+                    if download_and_play("https://youtu.be/1exYBdNZrhg", "swimming_intro.mp4"):
+                        run_game_process("games/arrowjumper.py", "[Official] Doodle Champion Island Games - Artistic Swimming Song 1 (Rock).mp3")
 
                 elif button2_rect.collidepoint(mouse_pos):
                     pygame.mixer.music.stop()  # Stop overworld music!
-                    download_and_play("https://youtu.be/qsqWftxM3iU", "rugby_intro.mp4")
-                    run_game_process("games/mazeoni.py", "[Official] Doodle Champion Island Games - Rugby Theme.mp3")
+                    if download_and_play("https://youtu.be/qsqWftxM3iU", "rugby_intro.mp4"):
+                        run_game_process("games/mazeoni.py", "[Official] Doodle Champion Island Games - Rugby Theme.mp3")
 
                 elif button3_rect.collidepoint(mouse_pos):
                     pygame.mixer.music.stop()  # Stop overworld music!
-                    download_and_play("https://youtu.be/fgJy3Q0vzMw", "marathon_intro.mp4")
-                    run_game_process("games/e.py", "[Official] Doodle Champion Island Games - Marathon Theme.mp3")
+                    if download_and_play("https://youtu.be/fgJy3Q0vzMw", "marathon_intro.mp4"):
+                        run_game_process("games/e.py", "[Official] Doodle Champion Island Games - Marathon Theme.mp3")
 
                 elif button4_rect.collidepoint(mouse_pos):
                     pygame.mixer.music.stop()  # Stop overworld music!
-                    download_and_play("https://youtu.be/aeIySOUIQ2g", "skateboarding_intro.mp4")
-                    run_game_process("games/runningrace.py", "[Official] Doodle Champion Island Games - Skateboarding Theme.mp3")
+                    if download_and_play("https://youtu.be/aeIySOUIQ2g", "skateboarding_intro.mp4"):
+                        run_game_process("games/runningrace.py", "[Official] Doodle Champion Island Games - Skateboarding Theme.mp3")
 
     # Fill the window with background
     window.fill(black)
