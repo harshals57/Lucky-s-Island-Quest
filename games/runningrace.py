@@ -60,15 +60,21 @@ def press_right():
     global last_key_pressed
     # Only move forward if the last tapped key was not Right (enforcing alternation)
     if not game_over and last_key_pressed != "Right":
-        user_turtle.forward(randint(6, 10))
-        last_key_pressed = "Right"
+        try:
+            user_turtle.forward(randint(6, 10))
+            last_key_pressed = "Right"
+        except:
+            pass
 
 def press_left():
     global last_key_pressed
     # Only move forward if the last tapped key was not Left (enforcing alternation)
     if not game_over and last_key_pressed != "Left":
-        user_turtle.forward(randint(6, 10))
-        last_key_pressed = "Left"
+        try:
+            user_turtle.forward(randint(6, 10))
+            last_key_pressed = "Left"
+        except:
+            pass
 
 # Register event handlers
 screen.listen()
@@ -102,87 +108,92 @@ screen.tracer(0)
 def game_loop():
     global game_over, last_key_pressed, waiting_for_input, action
     
-    if game_over:
-        return
-        
-    # Move AI opponents forward by random amount
-    for opponent in [lol, t, fish]:
-        # Default speed
-        speed = randint(2, 5)
-        
-        # Rubber-banding logic:
-        # If the player is ahead and close to winning (xcor > 50), the AI starts accelerating
-        if user_turtle.xcor() > 50 and opponent.xcor() < user_turtle.xcor():
-            speed += randint(3, 6)
-            
-        # Final stretch rubber band:
-        # If the player is very close to the finish line (xcor > 180), the AI gets an extra boost
-        # to overtake the player right before the end, creating the requested "about to win but lose" illusion.
-        if user_turtle.xcor() > 180:
-            speed += randint(6, 10)
-            
-        opponent.forward(speed)
-
-    # Update visual state
-    screen.update()
-
-    # Check winning condition (Finish line is x = 280)
-    if user_turtle.xcor() >= 280 or lol.xcor() >= 280 or t.xcor() >= 280 or fish.xcor() >= 280:
-        game_over = True
-        
-        # The AI will almost always overtake, but we verify who crossed first
-        if user_turtle.xcor() >= 280:
-            winner_text = "YOU WON!"
-        else:
-            winner_text = "PC WON!"
-            
-        # Draw winner banners and prompts
-        writer.goto(0, 0)
-        writer.write(winner_text, align="center", font=("Arial", 36, "bold"))
-        writer.goto(0, -50)
-        writer.write("Press SPACE to Restart or ESC to Exit", align="center", font=("Arial", 18, "bold"))
-        screen.update()
-        
-        # Reset input loop states
-        waiting_for_input = True
-        action = None
-        
-        # Bind keys for restart/exit menu
-        screen.listen()
-        screen.onkeypress(handle_restart, "space")
-        screen.onkeypress(handle_exit, "Escape")
-        
-        # Blocking loop for menu selection (sleep yields to Tkinter window refresh)
-        while waiting_for_input:
-            screen.update()
-            time.sleep(0.05)
-            
-        if action == "restart":
-            # Reset swimmer coordinates
-            ada.goto(-240, 200)
-            lol.goto(-240, 50)
-            t.goto(-240, -100)
-            fish.goto(-240, -200)
-            
-            # Reset tracking variables
-            writer.clear()
-            last_key_pressed = None
-            game_over = False
-            
-            # Rebind race controls
-            screen.listen()
-            screen.onkeypress(press_right, "Right")
-            screen.onkeypress(press_left, "Left")
-            
-            # Re-run the loop
-            game_loop()
-        else:
-            screen.bye()
+    try:
+        if game_over:
             return
+            
+        # Move AI opponents forward by random amount
+        for opponent in [lol, t, fish]:
+            # Default speed
+            speed = randint(2, 5)
+            
+            # Rubber-banding logic:
+            # If the player is ahead and close to winning (xcor > 50), the AI starts accelerating
+            if user_turtle.xcor() > 50 and opponent.xcor() < user_turtle.xcor():
+                speed += randint(3, 6)
+                
+            # Final stretch rubber band:
+            # If the player is very close to the finish line (xcor > 180), the AI gets an extra boost
+            # to overtake the player right before the end, creating the requested "about to win but lose" illusion.
+            if user_turtle.xcor() > 180:
+                speed += randint(6, 10)
+                
+            opponent.forward(speed)
 
-    # Schedule next frame in 30ms (approx. 33 FPS)
-    if not game_over:
-        screen.ontimer(game_loop, 30)
+        # Update visual state
+        screen.update()
+
+        # Check winning condition (Finish line is x = 280)
+        if user_turtle.xcor() >= 280 or lol.xcor() >= 280 or t.xcor() >= 280 or fish.xcor() >= 280:
+            game_over = True
+            
+            # The AI will almost always overtake, but we verify who crossed first
+            if user_turtle.xcor() >= 280:
+                winner_text = "YOU WON!"
+            else:
+                winner_text = "PC WON!"
+                
+            # Draw winner banners and prompts
+            writer.goto(0, 0)
+            writer.write(winner_text, align="center", font=("Arial", 36, "bold"))
+            writer.goto(0, -50)
+            writer.write("Press SPACE to Restart or ESC to Exit", align="center", font=("Arial", 18, "bold"))
+            screen.update()
+            
+            # Reset input loop states
+            waiting_for_input = True
+            action = None
+            
+            # Bind keys for restart/exit menu
+            screen.listen()
+            screen.onkeypress(handle_restart, "space")
+            screen.onkeypress(handle_exit, "Escape")
+            
+            # Blocking loop for menu selection (sleep yields to Tkinter window refresh)
+            while waiting_for_input:
+                screen.update()
+                time.sleep(0.05)
+                
+            if action == "restart":
+                # Reset swimmer coordinates
+                ada.goto(-240, 200)
+                lol.goto(-240, 50)
+                t.goto(-240, -100)
+                fish.goto(-240, -200)
+                
+                # Reset tracking variables
+                writer.clear()
+                last_key_pressed = None
+                game_over = False
+                
+                # Rebind race controls
+                screen.listen()
+                screen.onkeypress(press_right, "Right")
+                screen.onkeypress(press_left, "Left")
+                
+                # Re-run the loop
+                game_loop()
+            else:
+                screen.bye()
+                return
+
+        # Schedule next frame in 30ms (approx. 33 FPS)
+        if not game_over:
+            screen.ontimer(game_loop, 30)
+            
+    except Exception:
+        # Gracefully exit if the Tkinter canvas or window is destroyed/closed
+        pass
 
 # Start the game loop
 game_loop()
