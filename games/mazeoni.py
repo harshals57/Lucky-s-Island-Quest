@@ -16,7 +16,7 @@ def oni():
     register_shape("../images/lucky.gif")
     register_shape("../images/oni.gif")
 
-    state = {'score': 0}
+    state = {'score': 0, 'game_over': False}
     path = Turtle(visible=False)
     writer = Turtle(visible=False)
     aim = vector(5, 0)
@@ -28,7 +28,7 @@ def oni():
         [vector(100, -160), vector(-5, 0)],
     ]
     # fmt: off
-    tiles = [
+    initial_tiles = [
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
         0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0,
@@ -53,6 +53,7 @@ def oni():
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     ]
     # fmt: on
+    tiles = list(initial_tiles)
 
     def square(x, y):
         """Draw square using path at (x, y)."""
@@ -108,6 +109,9 @@ def oni():
 
     def move():
         """Move pacman and all ghosts."""
+        if state['game_over']:
+            return
+            
         writer.undo()
         writer.write(state['score'])
 
@@ -127,13 +131,8 @@ def oni():
             
             # Check victory condition
             if state['score'] >= 100:
-                writer.goto(0, 0)
-                writer.color('yellow')
-                writer.write("YOU WIN!", align="center", font=("Arial", 30, "bold"))
-                update()
-                import time
-                time.sleep(2)
-                bye()
+                state['game_over'] = True
+                show_game_over_menu("YOU WIN!")
                 return
 
         # Draw pacman with "lucky.gif" shape
@@ -166,16 +165,70 @@ def oni():
         # Check collision with ghosts
         for point, course in ghosts:
             if abs(pacman - point) < 20:
-                writer.goto(0, 0)
-                writer.color('red')
-                writer.write("GAME OVER", align="center", font=("Arial", 30, "bold"))
-                update()
-                import time
-                time.sleep(2)
-                bye()
+                state['game_over'] = True
+                show_game_over_menu("GAME OVER")
                 return
 
         ontimer(move, 100)
+
+    def show_game_over_menu(msg):
+        writer.goto(0, 0)
+        if msg == "YOU WIN!":
+            writer.color('yellow')
+        else:
+            writer.color('red')
+        writer.write(msg, align="center", font=("Arial", 30, "bold"))
+        
+        writer.goto(0, -40)
+        writer.color('white')
+        writer.write("Press SPACE to Restart or ESC to Exit", align="center", font=("Arial", 16, "bold"))
+        update()
+        
+        # Listen for restart keys
+        listen()
+        onkey(restart_game, "space")
+        onkey(bye, "Escape")
+
+    def restart_game():
+        # Reset tiles
+        for i in range(len(tiles)):
+            tiles[i] = initial_tiles[i]
+            
+        # Reset state variables
+        state['score'] = 0
+        state['game_over'] = False
+        
+        # Reset pacman and ghosts
+        pacman.x = -40
+        pacman.y = -80
+        aim.x = 5
+        aim.y = 0
+        
+        ghosts[0][0].x, ghosts[0][0].y = -180, 160
+        ghosts[0][1].x, ghosts[0][1].y = 5, 0
+        
+        ghosts[1][0].x, ghosts[1][0].y = -180, -160
+        ghosts[1][1].x, ghosts[1][1].y = 0, 5
+        
+        ghosts[2][0].x, ghosts[2][0].y = 100, 160
+        ghosts[2][1].x, ghosts[2][1].y = 0, -5
+        
+        ghosts[3][0].x, ghosts[3][0].y = 100, -160
+        ghosts[3][1].x, ghosts[3][1].y = -5, 0
+        
+        # Redraw the world
+        path.clear()
+        world()
+        
+        # Rebind movement keys
+        listen()
+        onkey(lambda: change(5, 0), 'Right')
+        onkey(lambda: change(-5, 0), 'Left')
+        onkey(lambda: change(0, 5), 'Up')
+        onkey(lambda: change(0, -5), 'Down')
+        
+        # Re-run the move loop
+        move()
 
     def change(x, y):
         """Change pacman aim if valid."""

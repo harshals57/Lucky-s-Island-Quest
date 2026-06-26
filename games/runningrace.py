@@ -107,21 +107,69 @@ while not game_over:
     screen.update()
 
     # Check winning condition (Finish line is x = 280)
-    if user_turtle.xcor() >= 280:
+    if user_turtle.xcor() >= 280 or lol.xcor() >= 280 or t.xcor() >= 280 or fish.xcor() >= 280:
+        if user_turtle.xcor() >= 280:
+            winner_text = "YOU WON!"
+        else:
+            winner_text = "PC WON!"
+            
+        # Draw winner banners and prompts
         writer.goto(0, 0)
-        writer.write("YOU WON!", align="center", font=("Arial", 36, "bold"))
+        writer.write(winner_text, align="center", font=("Arial", 36, "bold"))
+        writer.goto(0, -50)
+        writer.write("Press SPACE to Restart or ESC to Exit", align="center", font=("Arial", 18, "bold"))
         screen.update()
-        game_over = True
-        time.sleep(2)
-    elif lol.xcor() >= 280 or t.xcor() >= 280 or fish.xcor() >= 280:
-        writer.goto(0, 0)
-        writer.write("PC WON!", align="center", font=("Arial", 36, "bold"))
-        screen.update()
-        game_over = True
-        time.sleep(2)
+        
+        # Wait for input
+        waiting_for_input = True
+        action = None
+        
+        def handle_restart():
+            nonlocal waiting_for_input, action
+            action = "restart"
+            waiting_for_input = False
+            
+        def handle_exit():
+            nonlocal waiting_for_input, action
+            action = "exit"
+            waiting_for_input = False
+            
+        screen.listen()
+        screen.onkeypress(handle_restart, "space")
+        screen.onkeypress(handle_exit, "Escape")
+        
+        while waiting_for_input:
+            screen.update()
+            time.sleep(0.05)
+            
+        if action == "restart":
+            # Reset swimmer coordinates
+            ada.goto(-240, 200)
+            lol.goto(-240, 50)
+            t.goto(-240, -100)
+            fish.goto(-240, -200)
+            
+            # Reset tracking variables
+            writer.clear()
+            last_key_pressed = None
+            keys_held["Right"] = False
+            keys_held["Left"] = False
+            
+            # Rebind keys
+            screen.listen()
+            screen.onkeypress(press_right, "Right")
+            screen.onkeyrelease(release_right, "Right")
+            screen.onkeypress(press_left, "Left")
+            screen.onkeyrelease(release_left, "Left")
+        else:
+            screen.bye()
+            break
 
     # Frame delay to reduce CPU consumption and keep responsiveness
     time.sleep(0.03)
 
 # Safely close turtle screen
-screen.bye()
+try:
+    screen.bye()
+except:
+    pass

@@ -98,23 +98,57 @@ def snake():
             pen.goto(0, 0)
             pen.color("red")
             pen.write("GAME OVER!", align="center", font=("candara", 30, "bold"))
+            pen.goto(0, -40)
+            pen.color("white")
+            pen.write("Press SPACE to Restart or ESC to Exit", align="center", font=("candara", 18, "bold"))
             wn.update()
             
-            time.sleep(1.5)
+            # Wait for space or escape
+            waiting_for_input = True
+            action = None
             
-            head.goto(0, 0)
-            head.direction = "Stop"
-            for segment in segments:
-                segment.goto(1000, 1000)
-            segments.clear()
+            def handle_restart():
+                nonlocal waiting_for_input, action
+                action = "restart"
+                waiting_for_input = False
+                
+            def handle_exit():
+                nonlocal waiting_for_input, action
+                action = "exit"
+                waiting_for_input = False
+                
+            wn.listen()
+            wn.onkeypress(handle_restart, "space")
+            wn.onkeypress(handle_exit, "Escape")
             
-            score = 0
-            delay = 0.1
-            
-            pen.clear()
-            pen.goto(0, 250)
-            pen.color("white")
-            pen.write("Score : {} High Score : {} ".format(score, high_score), align="center", font=("candara", 24, "bold"))
+            while waiting_for_input:
+                wn.update()
+                time.sleep(0.05)
+                
+            if action == "restart":
+                head.goto(0, 0)
+                head.direction = "Stop"
+                for segment in segments:
+                    segment.goto(1000, 1000)
+                segments.clear()
+                
+                score = 0
+                delay = 0.1
+                
+                pen.clear()
+                pen.goto(0, 250)
+                pen.color("white")
+                pen.write("Score : {} High Score : {} ".format(score, high_score), align="center", font=("candara", 24, "bold"))
+                
+                # Rebind movement keys
+                wn.listen()
+                wn.onkeypress(group, "Up")
+                wn.onkeypress(godown, "Down")
+                wn.onkeypress(goleft, "Left")
+                wn.onkeypress(goright, "Right")
+            else:
+                wn.bye()
+                return
             
         # Check collision with food
         if head.distance(food) < 20:
@@ -155,23 +189,57 @@ def snake():
                 pen.goto(0, 0)
                 pen.color("red")
                 pen.write("GAME OVER!", align="center", font=("candara", 30, "bold"))
+                pen.goto(0, -40)
+                pen.color("white")
+                pen.write("Press SPACE to Restart or ESC to Exit", align="center", font=("candara", 18, "bold"))
                 wn.update()
                 
-                time.sleep(1.5)
+                # Wait for space or escape
+                waiting_for_input = True
+                action = None
                 
-                head.goto(0, 0)
-                head.direction = "Stop"
-                for s in segments:
-                    s.goto(1000, 1000)
-                segments.clear()
+                def handle_restart():
+                    nonlocal waiting_for_input, action
+                    action = "restart"
+                    waiting_for_input = False
+                    
+                def handle_exit():
+                    nonlocal waiting_for_input, action
+                    action = "exit"
+                    waiting_for_input = False
+                    
+                wn.listen()
+                wn.onkeypress(handle_restart, "space")
+                wn.onkeypress(handle_exit, "Escape")
+                
+                while waiting_for_input:
+                    wn.update()
+                    time.sleep(0.05)
+                    
+                if action == "restart":
+                    head.goto(0, 0)
+                    head.direction = "Stop"
+                    for s in segments:
+                        s.goto(1000, 1000)
+                    segments.clear()
 
-                score = 0
-                delay = 0.1
-                
-                pen.clear()
-                pen.goto(0, 250)
-                pen.color("white")
-                pen.write("Score : {} High Score : {} ".format(score, high_score), align="center", font=("candara", 24, "bold"))
+                    score = 0
+                    delay = 0.1
+                    
+                    pen.clear()
+                    pen.goto(0, 250)
+                    pen.color("white")
+                    pen.write("Score : {} High Score : {} ".format(score, high_score), align="center", font=("candara", 24, "bold"))
+                    
+                    # Rebind movement keys
+                    wn.listen()
+                    wn.onkeypress(group, "Up")
+                    wn.onkeypress(godown, "Down")
+                    wn.onkeypress(goleft, "Left")
+                    wn.onkeypress(goright, "Right")
+                else:
+                    wn.bye()
+                    return
                 
         time.sleep(delay)
 
